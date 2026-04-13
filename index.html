@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#05070a">
+    <title>Solo Leveling | Santosh</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --deep-dark: #05070a;
+            --gold: #ffd700;
+            --boss-red: #ff003c;
+            --rank-color: #fff;
+        }
+
+        body {
+            background-color: var(--deep-dark);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .screen { display: none; width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box; }
+        .active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .rank-box {
+            font-size: 4.5rem;
+            font-family: 'Orbitron';
+            color: var(--rank-color);
+            text-shadow: 0 0 25px var(--rank-color);
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .glass-card {
+            background: rgba(15, 20, 30, 0.95);
+            border: 1px solid var(--neon-blue);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .xp-bar-bg {
+            background: #111;
+            height: 14px;
+            border-radius: 7px;
+            margin: 12px 0;
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+        #xp-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-blue), #bc00ff);
+            transition: width 0.6s ease;
+        }
+
+        .btn {
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 14px;
+            font-family: 'Orbitron';
+            width: 100%;
+            margin: 6px 0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn:active { transform: scale(0.96); background: var(--neon-blue); color: black; }
+        .btn-boss { border-color: var(--boss-red); color: var(--boss-red); }
+        .btn-gold { border-color: var(--gold); color: var(--gold); }
+
+        .quest-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #222;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="status-screen" class="screen active">
+        <div style="text-align: center; border-bottom: 2px solid var(--neon-blue); padding-bottom: 10px; margin-bottom: 10px;">
+            <div style="font-family: 'Orbitron'; color: var(--neon-blue); font-size: 1.3rem;">SANTOSH KUMAR RANA</div>
+            <div style="font-size: 0.8rem; color: #888;">RANK: <span id="rank-name">F-Class</span></div>
+        </div>
+
+        <div class="rank-box" id="rank-tag">F</div>
+        
+        <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                <span>SYSTEM GOLD:</span>
+                <span id="gold-val" style="color: var(--gold);">0</span>
+            </div>
+            <div style="margin-top: 15px; font-size: 0.8rem; color: var(--boss-red); font-family: 'Orbitron';">FINAL BOSS: ALP CBT-2</div>
+            <div class="xp-bar-bg"><div id="xp-fill"></div></div>
+            <div style="text-align: center; font-size: 0.7rem;" id="xp-text">0 / 50,000 XP</div>
+        </div>
+
+        <button class="btn" onclick="goTo('quest-screen')">DAILY QUESTS</button>
+        <button class="btn btn-boss" onclick="goTo('dungeon-screen')">BOSS DUNGEON</button>
+        <button class="btn btn-gold" onclick="goTo('shop-screen')">SYSTEM STORE</button>
+        <button class="btn" style="border-color: #444; color:#444; margin-top:20px; font-size: 0.6rem;" onclick="resetData()">FORMAT SYSTEM (RESET)</button>
+    </div>
+
+    <div id="quest-screen" class="screen">
+        <h2 style="text-align: center; color: var(--neon-blue); font-family: 'Orbitron';">DAILY QUESTS</h2>
+        <div class="glass-card" id="quest-list"></div>
+        <button class="btn" style="border-color:#ff4444; color:#ff4444;" onclick="addXP(-200, 'Penalty Applied!')">FAIL ALL TRAINING (-200)</button>
+        <button class="btn" onclick="goTo('status-screen')">BACK</button>
+    </div>
+
+    <div id="dungeon-screen" class="screen">
+        <h2 style="text-align: center; color: var(--boss-red); font-family: 'Orbitron';">DUNGEON</h2>
+        <div class="glass-card">
+            <h3 style="margin-top:0;">CBT-2 Practice Set</h3>
+            <p style="color:#aaa;">Solve one full set to gain immense XP.</p>
+            <button class="btn btn-boss" onclick="addXP(300, 'MONSTER DEFEATED!')">CLEAR DUNGEON (+300)</button>
+            <button class="btn" style="border-color:#666; color:#666;" onclick="addXP(-100, 'DUNGEON FAILED')">FAIL (-100)</button>
+        </div>
+        <button class="btn" onclick="goTo('status-screen')">BACK</button>
+    </div>
+
+    <div id="shop-screen" class="screen">
+        <h2 style="text-align: center; color: var(--gold); font-family: 'Orbitron';">STORE</h2>
+        <div class="glass-card" id="shop-list"></div>
+        <button class="btn" onclick="goTo('status-screen')">BACK</button>
+    </div>
+
+    <script>
+        // PWA logic to keep app alive
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
+        }
+
+        let data = JSON.parse(localStorage.getItem('Hunter_Final_Save')) || { xp: 0, rank: "F" };
+
+        const quests = [
+            { n: "Trade Theory", x: 50 }, { n: "Trade MCQ", x: 50 },
+            { n: "Math MCQ", x: 50 }, { n: "Reasoning", x: 50 },
+            { n: "Basic Science", x: 50 }, { n: "Science MCQ", x: 50 }
+        ];
+
+        const shop = [
+            { n: "Cheat Meal", c: 500 }, { n: "Anime Episode", c: 800 },
+            { n: "Movie", c: 300 }, { n: "Reels (15m)", c: 200 }
+        ];
+
+        const ranks = [
+            { r: "F", m: 0, b: 0 }, { r: "E", m: 800, b: 500 },
+            { r: "D", m: 2200, b: 800 }, { r: "C", m: 7600, b: 1500 },
+            { r: "B", m: 18000, b: 3000 }, { r: "A", m: 32000, b: 5000 },
+            { r: "S", m: 50000, b: 10000 }
+        ];
+
+        function goTo(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function addXP(amt, msg) {
+            let oldR = data.rank;
+            data.xp += amt;
+            if (data.xp < 0) data.xp = 0;
+
+            let newR = "F";
+            let bonus = 0;
+            ranks.forEach(rk => { if(data.xp >= rk.m) { newR = rk.r; bonus = rk.b; } });
+
+            if (isHigher(newR, oldR)) {
+                data.rank = newR;
+                data.xp += bonus;
+                celebrate(newR, bonus);
+            } else { data.rank = newR; }
+
+            save(); updateUI();
+            if(msg) alert(msg);
+        }
+
+        function isHigher(n, o) {
+            const s = ["F","E","D","C","B","A","S"];
+            return s.indexOf(n) > s.indexOf(o);
+        }
+
+        function celebrate(r, b) {
+            confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 }, colors:['#00f2ff','#ffd700','#ff003c'] });
+            alert(`⚠️ SYSTEM NOTIFICATION\n\nRank Up: ${r}\nBonus: +${b} Gold`);
+        }
+
+        function buy(cost, name) {
+            if (data.xp >= cost) { addXP(-cost, `Purchased: ${name}`); } 
+            else { alert("INSUFFICIENT GOLD!"); }
+        }
+
+        function updateUI() {
+            document.getElementById('gold-val').innerText = data.xp.toLocaleString();
+            document.getElementById('rank-tag').innerText = data.rank;
+            document.getElementById('rank-name').innerText = data.rank + "-Class Hunter";
+            
+            const colors = { "F":"#fff", "E":"#00f2ff", "D":"#00ff88", "C":"#ffff00", "B":"#ff8800", "A":"#ff4400", "S":"#ff003c" };
+            document.documentElement.style.setProperty('--rank-color', colors[data.rank]);
+
+            const p = (data.xp / 50000) * 100;
+            document.getElementById('xp-fill').style.width = Math.min(p, 100) + "%";
+            document.getElementById('xp-text').innerText = `${data.xp.toLocaleString()} / 50,000 XP`;
+        }
+
+        function save() { localStorage.setItem('Hunter_Final_Save', JSON.stringify(data)); }
+
+        function resetData() { if(confirm("Erase all progress?")) { localStorage.clear(); location.reload(); } }
+
+        window.onload = () => {
+            document.getElementById('quest-list').innerHTML = quests.map(q => `
+                <div class="quest-row">
+                    <span>${q.n} (+${q.x})</span>
+                    <button class="btn" style="width:80px; margin:0;" onclick="addXP(${q.x}, 'Quest Clear')">DONE</button>
+                </div>`).join('');
+            document.getElementById('shop-list').innerHTML = shop.map(i => `
+                <div class="quest-row">
+                    <span>${i.n} (${i.c})</span>
+                    <button class="btn btn-gold" style="width:80px; margin:0;" onclick="buy(${i.c}, '${i.n}')">BUY</button>
+                </div>`).join('');
+            updateUI();
+        };
+    </script>
+</body>
+</html>
