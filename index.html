@@ -2,239 +2,798 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#05070a">
-    <title>Solo Leveling | Santosh</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE SYSTEM - HUNTER EVOLUTION</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;600&display=swap');
+
         :root {
-            --neon-blue: #00f2ff;
-            --deep-dark: #05070a;
+            --bg: #020508;
+            --glass: rgba(10, 15, 25, 0.95);
+            --cyan: #00f2ff;
+            --cyan-glow: rgba(0, 242, 255, 0.5);
+            --red: #ff3e3e;
+            --orange: #ff9d00;
             --gold: #ffd700;
-            --boss-red: #ff003c;
-            --rank-color: #fff;
+            --text: #e0faff;
+            --rank-f: #888888; --rank-e: #4caf50; --rank-d: #2196f3;
+            --rank-c: #9c27b0; --rank-b: #ff9800; --rank-a: #f44336; --rank-s: #ffd700;
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            background-color: var(--deep-dark);
-            color: white;
+            background-color: var(--bg);
+            color: var(--text);
             font-family: 'Rajdhani', sans-serif;
             margin: 0;
             display: flex;
             justify-content: center;
+            align-items: center;
             min-height: 100vh;
+            padding: 12px;
         }
 
-        .screen { display: none; width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box; }
-        .active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .rank-box {
-            font-size: 4.5rem;
-            font-family: 'Orbitron';
-            color: var(--rank-color);
-            text-shadow: 0 0 25px var(--rank-color);
-            text-align: center;
-            margin: 15px 0;
-        }
-
-        .glass-card {
-            background: rgba(15, 20, 30, 0.95);
-            border: 1px solid var(--neon-blue);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .xp-bar-bg {
-            background: #111;
-            height: 14px;
-            border-radius: 7px;
-            margin: 12px 0;
-            border: 1px solid #333;
-            overflow: hidden;
-        }
-        #xp-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--neon-blue), #bc00ff);
-            transition: width 0.6s ease;
-        }
-
-        .btn {
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            padding: 14px;
-            font-family: 'Orbitron';
+        .screen {
+            display: none;
             width: 100%;
-            margin: 6px 0;
-            cursor: pointer;
-            border-radius: 5px;
+            max-width: 450px;
+            padding: 20px;
+            background: var(--glass);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            backdrop-filter: blur(15px);
         }
-        .btn:active { transform: scale(0.96); background: var(--neon-blue); color: black; }
-        .btn-boss { border-color: var(--boss-red); color: var(--boss-red); }
-        .btn-gold { border-color: var(--gold); color: var(--gold); }
 
-        .quest-row {
+        .active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #222;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .inv-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: rgba(255,255,255,0.02);
+            padding: 8px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            min-height: 58px;
+        }
+
+        .inv-item {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background: #000;
+            border: 1px solid var(--cyan);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .item-qty {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--cyan);
+            color: #000;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 4px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .rank-box {
+            text-align: center;
+            padding: 15px;
+            border-radius: 20px;
+            border: 2px solid var(--rank-f);
+            transition: 0.5s;
+            background: rgba(255,255,255,0.02);
+            margin-bottom: 15px;
+        }
+
+        .rank-val {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            line-height: 1;
+            display: block;
+        }
+
+        .rank-title {
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .info-btn {
+            width: 18px;
+            height: 18px;
+            border: 1px solid currentColor;
+            border-radius: 50%;
+            font-size: 11px;
+            line-height: 18px;
+            display: inline-block;
+            cursor: pointer;
+            margin-left: 5px;
+            vertical-align: middle;
+            position: relative;
+        }
+
+        .tooltip {
+            display: none;
+            position: absolute;
+            background: #000;
+            border: 1px solid var(--cyan);
+            padding: 12px;
+            border-radius: 12px;
+            width: 220px;
+            z-index: 100;
+            font-size: 0.8rem;
+            text-align: left;
+            box-shadow: 0 0 20px #000;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .info-btn:hover .tooltip,
+        .info-btn:focus-within .tooltip { display: block; }
+
+        .btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 12px;
+            border-radius: 14px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--cyan-glow);
+        }
+
+        .btn-red { border-color: var(--red); color: var(--red); }
+        .btn-orange { border-color: var(--orange); color: var(--orange); }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 8px;
+            border-radius: 12px;
+            word-break: break-word;
+        }
+
+        .del-btn {
+            color: var(--red);
+            background: #000;
+            border: 1px solid var(--red);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .bar-wrap {
+            background: #000;
+            height: 10px;
+            border-radius: 10px;
+            border: 1px solid #222;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), #00a2ff);
+            width: 0%;
+            transition: 1s;
+        }
+
+        #notify-bg, #modal-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            padding: 16px;
+        }
+
+        .notify-box, .modal {
+            background: #050a10;
+            border: 2px solid var(--cyan);
+            padding: 20px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+        }
+
+        .input-box {
+            background: transparent;
+            border: 1px solid var(--cyan);
+            color: white;
+            padding: 12px;
+            width: 100%;
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .calendar-box {
+            display: none;
+            margin-bottom: 15px;
+            border: 1px solid rgba(0,242,255,0.2);
+            border-radius: 18px;
+            padding: 14px;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7,1fr);
+            gap: 6px;
+        }
+
+        .calendar-day {
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #111;
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.75rem;
+        }
+
+        .calendar-day.visited {
+            background: #1faa59;
+            border-color: #1faa59;
+            color: #fff;
+        }
+
+        .calendar-day.missed {
+            background: #ff3e3e;
+            border-color: #ff3e3e;
+            color: #fff;
+        }
+
+        .calendar-day.today {
+            box-shadow: 0 0 0 2px var(--cyan);
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 8px; align-items: flex-start; }
+            .screen { padding: 16px; border-radius: 18px; margin-top: 8px; }
+            .rank-val { font-size: 2.5rem; }
+            .rank-title { font-size: 0.8rem; }
+            .header { align-items: flex-start; }
+            .tooltip {
+                width: 190px;
+                left: auto;
+                right: 0;
+                transform: none;
+            }
         }
     </style>
 </head>
 <body>
+    <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+    <audio id="snd-level" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+    <audio id="snd-buy" src="https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3"></audio>
 
-    <div id="status-screen" class="screen active">
-        <div style="text-align: center; border-bottom: 2px solid var(--neon-blue); padding-bottom: 10px; margin-bottom: 10px;">
-            <div style="font-family: 'Orbitron'; color: var(--neon-blue); font-size: 1.3rem;">SANTOSH KUMAR RANA</div>
-            <div style="font-size: 0.8rem; color: #888;">RANK: <span id="rank-name">F-Class</span></div>
-        </div>
-
-        <div class="rank-box" id="rank-tag">F</div>
-        
-        <div class="glass-card">
-            <div style="display: flex; justify-content: space-between; font-weight: bold;">
-                <span>SYSTEM GOLD:</span>
-                <span id="gold-val" style="color: var(--gold);">0</span>
+    <div id="notify-bg">
+        <div class="notify-box">
+            <h3 style="color:var(--cyan); font-family:'Orbitron', sans-serif; margin-top:0;">SYSTEM</h3>
+            <p id="notify-msg">--</p>
+            <div style="display:flex; gap:10px;">
+                <button id="notify-confirm" class="btn">OK</button>
+                <button id="notify-cancel" class="btn" style="border-color:#444; color:#444;">CLOSE</button>
             </div>
-            <div style="margin-top: 15px; font-size: 0.8rem; color: var(--boss-red); font-family: 'Orbitron';">FINAL BOSS: ALP CBT-2</div>
-            <div class="xp-bar-bg"><div id="xp-fill"></div></div>
-            <div style="text-align: center; font-size: 0.7rem;" id="xp-text">0 / 50,000 XP</div>
+        </div>
+    </div>
+
+    <div id="modal-bg">
+        <div class="modal">
+            <h3 id="m-title" style="margin-top:0; color:var(--cyan)">ADD</h3>
+            <input type="text" id="m-name" class="input-box" placeholder="Name">
+            <input type="number" id="m-xp" class="input-box" placeholder="XP Value">
+            <button class="btn" onclick="app.addItem()">ACTIVATE</button>
+            <button class="btn" style="border-color:#444; color:#444; margin-top:8px;" onclick="app.closeM()">CANCEL</button>
+        </div>
+    </div>
+
+    <div id="screen-reg" class="screen">
+        <h1 style="font-family:'Orbitron', sans-serif; text-align:center; border-bottom:2px solid var(--cyan)">SYSTEM SYNC</h1>
+        <input type="text" id="reg-name" class="input-box" style="margin-top:20px" placeholder="PLAYER NAME">
+        <input type="text" id="reg-goal" class="input-box" placeholder="FINAL BOSS">
+        <input type="date" id="reg-date" class="input-box">
+        <button class="btn" onclick="app.register()">LINK SOUL</button>
+    </div>
+
+    <div id="screen-main" class="screen">
+        <div class="header">
+            <div style="display:flex; align-items:flex-start; gap:10px;">
+                <div id="streak-icon" onclick="app.toggleCalendar()" style="width:34px; height:34px; border:1px solid var(--cyan); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--cyan); background:rgba(255,255,255,0.03); flex-shrink:0;" title="Daily Streak">📅</div>
+                <div>
+                    <div id="d-name" style="font-size:1.1rem; font-weight:bold; font-family:'Orbitron', sans-serif">---</div>
+                    <div id="timer-boss" style="font-size: 0.65rem; color:var(--red);">--</div>
+                    <div id="streak-text" style="font-size:0.65rem; color:var(--gold); margin-top:2px;">Streak: 0</div>
+                </div>
+            </div>
+            <div style="text-align:right">
+                <div id="d-xp" style="font-size:1.1rem; font-weight:bold; color:var(--cyan)">0 XP</div>
+                <div id="shield-indicator" style="color:var(--gold); display:none;">🛡️</div>
+            </div>
         </div>
 
-        <button class="btn" onclick="goTo('quest-screen')">DAILY QUESTS</button>
-        <button class="btn btn-boss" onclick="goTo('dungeon-screen')">BOSS DUNGEON</button>
-        <button class="btn btn-gold" onclick="goTo('shop-screen')">SYSTEM STORE</button>
-        <button class="btn" style="border-color: #444; color:#444; margin-top:20px; font-size: 0.6rem;" onclick="resetData()">FORMAT SYSTEM (RESET)</button>
-    </div>
-
-    <div id="quest-screen" class="screen">
-        <h2 style="text-align: center; color: var(--neon-blue); font-family: 'Orbitron';">DAILY QUESTS</h2>
-        <div class="glass-card" id="quest-list"></div>
-        <button class="btn" style="border-color:#ff4444; color:#ff4444;" onclick="addXP(-200, 'Penalty Applied!')">FAIL ALL TRAINING (-200)</button>
-        <button class="btn" onclick="goTo('status-screen')">BACK</button>
-    </div>
-
-    <div id="dungeon-screen" class="screen">
-        <h2 style="text-align: center; color: var(--boss-red); font-family: 'Orbitron';">DUNGEON</h2>
-        <div class="glass-card">
-            <h3 style="margin-top:0;">CBT-2 Practice Set</h3>
-            <p style="color:#aaa;">Solve one full set to gain immense XP.</p>
-            <button class="btn btn-boss" onclick="addXP(300, 'MONSTER DEFEATED!')">CLEAR DUNGEON (+300)</button>
-            <button class="btn" style="border-color:#666; color:#666;" onclick="addXP(-100, 'DUNGEON FAILED')">FAIL (-100)</button>
+        <div id="calendar-popup" class="calendar-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-family:'Orbitron', sans-serif; color:var(--cyan); font-size:0.8rem;">STREAK CALENDAR</div>
+                <div id="calendar-month-label" style="font-size:0.75rem; color:var(--text);"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; font-size:0.65rem; opacity:0.7; margin-bottom:8px; text-align:center;">
+                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div id="calendar-grid" class="calendar-grid"></div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; font-size:0.65rem; opacity:0.9;">
+                <div><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#1faa59; margin-right:5px;"></span>Visited</div>
+                <div><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#ff3e3e; margin-right:5px;"></span>Missed</div>
+                <div><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#222; border:1px solid #555; margin-right:5px;"></span>Normal</div>
+            </div>
         </div>
-        <button class="btn" onclick="goTo('status-screen')">BACK</button>
+
+        <div class="sub-sec-title" style="font-size:0.6rem; opacity:0.5;">INVENTORY</div>
+        <div id="inv-list" class="inv-container"></div>
+
+        <div id="rank-box-ui" class="rank-box">
+            <span style="font-size:0.65rem; opacity:0.7">CURRENT STATUS
+                <div class="info-btn" tabindex="0">i
+                    <div class="tooltip">
+                        <b>RANKS:</b><br>
+                        F: Newbie (0-5k)<br>E: Soldier (5k-15k)<br>D: Warrior (15k-25k)<br>
+                        C: Knight (25k-35k)<br>B: Commander (35k-45k)<br>A: Hero (45k-50k)<br>S: Legend (50k+)
+                    </div>
+                </div>
+            </span>
+            <span id="d-rank" class="rank-val">F</span>
+            <span id="d-title" class="rank-title">NEWBIE</span>
+        </div>
+
+        <div style="margin:15px 0; padding:12px; background:rgba(255,62,62,0.05); border:1px solid rgba(255,62,62,0.2); border-radius:18px; text-align:center;">
+            <div id="d-goal" style="font-size:0.75rem; font-family:'Orbitron', sans-serif">GOAL</div>
+            <div class="bar-wrap"><div id="d-bar" class="bar-fill"></div></div>
+            <div id="timer-dung" style="font-size:0.6rem; color:var(--orange);">Dungeon: --</div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+            <button class="btn" onclick="app.show('screen-q')">Quest</button>
+            <button class="btn btn-red" onclick="app.show('screen-d')">Dungeon</button>
+            <button class="btn btn-orange" onclick="app.show('screen-s')">Store</button>
+            <button class="btn" style="border-color:#333; color:#555" onclick="app.reset()">Reset</button>
+        </div>
     </div>
 
-    <div id="shop-screen" class="screen">
-        <h2 style="text-align: center; color: var(--gold); font-family: 'Orbitron';">STORE</h2>
-        <div class="glass-card" id="shop-list"></div>
-        <button class="btn" onclick="goTo('status-screen')">BACK</button>
+    <div id="screen-q" class="screen">
+        <div class="header">
+            <div><div style="font-family:'Orbitron', sans-serif; color:var(--cyan)">DAILY QUEST</div><div id="timer-day" style="color:var(--orange); font-size:0.7rem">--</div></div>
+            <div style="width:30px; height:30px; background:var(--cyan); color:#000; border-radius:50%; text-align:center; line-height:30px; font-size:1.2rem; cursor:pointer;" onclick="app.openM('q')">+</div>
+        </div>
+        <div id="q-list" style="max-height:350px; overflow-y:auto"></div>
+        <button class="btn" style="margin-top:10px" onclick="app.show('screen-main')">BACK</button>
+    </div>
+
+    <div id="screen-d" class="screen">
+        <h2 style="text-align:center; color:var(--red); font-family:'Orbitron', sans-serif">DUNGEON</h2>
+        <div style="text-align:center; margin:30px 0;">
+            <p style="font-size:1.2rem; font-weight:bold;">Boss Practice</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px">
+                <button class="btn btn-red" onclick="app.fight(400)">VICTORY (+400)</button>
+                <button class="btn" style="border-color:#444" onclick="app.fight(-100)">LOST (-100)</button>
+            </div>
+        </div>
+        <button class="btn" onclick="app.show('screen-main')">BACK</button>
+    </div>
+
+    <div id="screen-s" class="screen">
+        <div class="header">
+            <div style="font-family:'Orbitron', sans-serif; color:var(--orange)">SYSTEM STORE</div>
+            <div style="width:30px; height:30px; background:var(--orange); color:#000; border-radius:50%; text-align:center; line-height:30px; font-size:1.2rem; cursor:pointer;" onclick="app.openM('s')">+</div>
+        </div>
+        <div id="s-list" style="max-height:350px; overflow-y:auto"></div>
+        <button class="btn btn-orange" style="margin-top:10px" onclick="app.show('screen-main')">BACK</button>
     </div>
 
     <script>
-        // PWA logic to keep app alive
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
-            });
-        }
+        const app = {
+            mType: 'q',
+            st: { name:"", goal:"", xp:0, fDate:null, dDate:null, resetDate:null, qs:[], ss:[{id:1,t:"Mystery Box",p:500,type:'item'}], inv:[], shieldExpiry:0, visitLog:{}, questResetAt:null },
 
-        let data = JSON.parse(localStorage.getItem('Hunter_Final_Save')) || { xp: 0, rank: "F" };
+            todayKey() {
+                return new Date().toISOString().split('T')[0];
+            },
 
-        const quests = [
-            { n: "Trade Theory", x: 50 }, { n: "Trade MCQ", x: 50 },
-            { n: "Math MCQ", x: 50 }, { n: "Reasoning", x: 50 },
-            { n: "Basic Science", x: 50 }, { n: "Science MCQ", x: 50 }
-        ];
+            markTodayVisit() {
+                if(!this.st.visitLog) this.st.visitLog = {};
+                this.st.visitLog[this.todayKey()] = 'visited';
+            },
 
-        const shop = [
-            { n: "Cheat Meal", c: 500 }, { n: "Anime Episode", c: 800 },
-            { n: "Movie", c: 300 }, { n: "Reels (15m)", c: 200 }
-        ];
+            getCurrentStreak() {
+                if(!this.st.visitLog) return 0;
+                let streak = 0;
+                let d = new Date();
+                while(true) {
+                    const key = d.toISOString().split('T')[0];
+                    if(this.st.visitLog[key] === 'visited') {
+                        streak++;
+                        d.setDate(d.getDate() - 1);
+                    } else {
+                        break;
+                    }
+                }
+                return streak;
+            },
 
-        const ranks = [
-            { r: "F", m: 0, b: 0 }, { r: "E", m: 800, b: 500 },
-            { r: "D", m: 2200, b: 800 }, { r: "C", m: 7600, b: 1500 },
-            { r: "B", m: 18000, b: 3000 }, { r: "A", m: 32000, b: 5000 },
-            { r: "S", m: 50000, b: 10000 }
-        ];
+            ensureMonthStatus() {
+                if(!this.st.visitLog) this.st.visitLog = {};
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const start = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        function goTo(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
+                for(let d = new Date(start); d < today; d.setDate(d.getDate() + 1)) {
+                    const key = d.toISOString().split('T')[0];
+                    if(!this.st.visitLog[key]) this.st.visitLog[key] = 'missed';
+                }
+                this.st.visitLog[this.todayKey()] = 'visited';
+            },
 
-        function addXP(amt, msg) {
-            let oldR = data.rank;
-            data.xp += amt;
-            if (data.xp < 0) data.xp = 0;
+            toggleCalendar() {
+                const box = document.getElementById('calendar-popup');
+                box.style.display = box.style.display === 'block' ? 'none' : 'block';
+                if(box.style.display === 'block') this.renderCalendar();
+            },
 
-            let newR = "F";
-            let bonus = 0;
-            ranks.forEach(rk => { if(data.xp >= rk.m) { newR = rk.r; bonus = rk.b; } });
+            renderCalendar() {
+                if(!this.st.visitLog) this.st.visitLog = {};
+                const grid = document.getElementById('calendar-grid');
+                const label = document.getElementById('calendar-month-label');
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth();
+                const firstDay = new Date(year, month, 1);
+                const lastDate = new Date(year, month + 1, 0).getDate();
+                const startWeekday = firstDay.getDay();
+                const todayKey = this.todayKey();
 
-            if (isHigher(newR, oldR)) {
-                data.rank = newR;
-                data.xp += bonus;
-                celebrate(newR, bonus);
-            } else { data.rank = newR; }
+                label.innerText = firstDay.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+                grid.innerHTML = '';
 
-            save(); updateUI();
-            if(msg) alert(msg);
-        }
+                for(let i = 0; i < startWeekday; i++) {
+                    const empty = document.createElement('div');
+                    grid.appendChild(empty);
+                }
 
-        function isHigher(n, o) {
-            const s = ["F","E","D","C","B","A","S"];
-            return s.indexOf(n) > s.indexOf(o);
-        }
+                const todayOnly = new Date(year, month, now.getDate());
 
-        function celebrate(r, b) {
-            confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 }, colors:['#00f2ff','#ffd700','#ff003c'] });
-            alert(`⚠️ SYSTEM NOTIFICATION\n\nRank Up: ${r}\nBonus: +${b} Gold`);
-        }
+                for(let day = 1; day <= lastDate; day++) {
+                    const cellDate = new Date(year, month, day);
+                    const key = cellDate.toISOString().split('T')[0];
+                    const cell = document.createElement('div');
+                    cell.className = 'calendar-day';
+                    cell.textContent = day;
 
-        function buy(cost, name) {
-            if (data.xp >= cost) { addXP(-cost, `Purchased: ${name}`); } 
-            else { alert("INSUFFICIENT GOLD!"); }
-        }
+                    if(cellDate <= todayOnly) {
+                        if(this.st.visitLog[key] === 'visited') {
+                            cell.classList.add('visited');
+                        } else if(this.st.visitLog[key] === 'missed') {
+                            cell.classList.add('missed');
+                        }
+                    }
 
-        function updateUI() {
-            document.getElementById('gold-val').innerText = data.xp.toLocaleString();
-            document.getElementById('rank-tag').innerText = data.rank;
-            document.getElementById('rank-name').innerText = data.rank + "-Class Hunter";
-            
-            const colors = { "F":"#fff", "E":"#00f2ff", "D":"#00ff88", "C":"#ffff00", "B":"#ff8800", "A":"#ff4400", "S":"#ff003c" };
-            document.documentElement.style.setProperty('--rank-color', colors[data.rank]);
+                    if(key === todayKey) {
+                        cell.classList.add('today');
+                    }
 
-            const p = (data.xp / 50000) * 100;
-            document.getElementById('xp-fill').style.width = Math.min(p, 100) + "%";
-            document.getElementById('xp-text').innerText = `${data.xp.toLocaleString()} / 50,000 XP`;
-        }
+                    grid.appendChild(cell);
+                }
+            },
 
-        function save() { localStorage.setItem('Hunter_Final_Save', JSON.stringify(data)); }
+            init() {
+                const data = localStorage.getItem('hunter_final_v5');
+                if(data) {
+                    this.st = JSON.parse(data);
+                    if(!this.st.visitLog) this.st.visitLog = {};
+                    if(!this.st.questResetAt) this.st.questResetAt = Date.now() + 86400000;
+                    this.ensureMonthStatus();
+                    this.checkResets();
+                    this.show('screen-main');
+                } else {
+                    this.show('screen-reg');
+                }
+                this.update();
+                setInterval(() => this.tick(), 1000);
+            },
 
-        function resetData() { if(confirm("Erase all progress?")) { localStorage.clear(); location.reload(); } }
+            play(id) {
+                document.getElementById(id).play().catch(() => {});
+            },
 
-        window.onload = () => {
-            document.getElementById('quest-list').innerHTML = quests.map(q => `
-                <div class="quest-row">
-                    <span>${q.n} (+${q.x})</span>
-                    <button class="btn" style="width:80px; margin:0;" onclick="addXP(${q.x}, 'Quest Clear')">DONE</button>
-                </div>`).join('');
-            document.getElementById('shop-list').innerHTML = shop.map(i => `
-                <div class="quest-row">
-                    <span>${i.n} (${i.c})</span>
-                    <button class="btn btn-gold" style="width:80px; margin:0;" onclick="buy(${i.c}, '${i.n}')">BUY</button>
-                </div>`).join('');
-            updateUI();
+            save() {
+                localStorage.setItem('hunter_final_v5', JSON.stringify(this.st));
+                this.update();
+            },
+
+            register() {
+                const n = document.getElementById('reg-name').value;
+                const g = document.getElementById('reg-goal').value;
+                const d = document.getElementById('reg-date').value;
+                if(!n || !g || !d) return alert("Error.");
+                this.st.name = n;
+                this.st.goal = g;
+                this.st.fDate = new Date(d).getTime();
+                this.st.resetDate = new Date().toDateString();
+                this.st.dDate = Date.now() + (7*24*60*60*1000);
+                this.st.visitLog = {};
+                this.markTodayVisit();
+                this.st.questResetAt = Date.now() + 86400000;
+                this.save();
+                this.show('screen-main');
+            },
+
+            update() {
+                const x = this.st.xp;
+                const rb = document.getElementById('rank-box-ui');
+                document.getElementById('d-name').innerText = this.st.name;
+                document.getElementById('d-xp').innerText = x.toLocaleString() + " XP";
+                document.getElementById('d-goal').innerText = "TARGET: " + (this.st.goal || "").toUpperCase();
+
+                let r="F", t="NEWBIE", c="var(--rank-f)";
+                if(x>=5000) { r="E"; t="SOLDIER"; c="var(--rank-e)"; }
+                if(x>=15000) { r="D"; t="WARRIOR"; c="var(--rank-d)"; }
+                if(x>=25000) { r="C"; t="KNIGHT"; c="var(--rank-c)"; }
+                if(x>=35000) { r="B"; t="COMMANDER"; c="var(--rank-b)"; }
+                if(x>=45000) { r="A"; t="HERO"; c="var(--rank-a)"; }
+                if(x>=50000) { r="S"; t="LEGEND"; c="var(--rank-s)"; }
+
+                document.getElementById('d-rank').innerText = r;
+                document.getElementById('d-title').innerText = t;
+                document.getElementById('d-rank').style.color = c;
+                rb.style.borderColor = c;
+                rb.style.boxShadow = `0 0 15px ${c}44`;
+
+                document.getElementById('d-bar').style.width = Math.min((x/50000)*100, 100) + "%";
+                document.getElementById('shield-indicator').style.display = Date.now() < this.st.shieldExpiry ? 'block' : 'none';
+                document.getElementById('streak-text').innerText = "Streak: " + this.getCurrentStreak();
+
+                this.renderLists();
+                if(document.getElementById('calendar-popup').style.display === 'block') this.renderCalendar();
+            },
+
+            renderLists() {
+                const qL = document.getElementById('q-list');
+                qL.innerHTML = "";
+                this.st.qs.forEach(q => {
+                    qL.innerHTML += `<div class="list-item" style="opacity:${q.d ? 0.3 : 1}">
+                        <div><b>${q.t}</b><br><small style="color:var(--cyan)">+${q.p} XP</small></div>
+                        <div style="display:flex; gap:5px">
+                            <button class="btn" style="width:auto; padding:5px 10px" onclick="app.doQ(${q.id})" ${q.d ? 'disabled' : ''}>DONE</button>
+                            <button class="del-btn" onclick="app.delItem('q',${q.id})">×</button>
+                        </div>
+                    </div>`;
+                });
+
+                const sL = document.getElementById('s-list');
+                sL.innerHTML = "";
+                this.st.ss.forEach(s => {
+                    sL.innerHTML += `<div class="list-item" style="border-color:var(--orange)">
+                        <div><b>${s.t}</b><br><small style="color:var(--orange)">${s.p} XP</small></div>
+                        <div style="display:flex; gap:5px">
+                            <button class="btn btn-orange" style="width:auto; padding:5px 10px" onclick="app.buy(${s.id})">BUY</button>
+                            <button class="del-btn" style="border-color:var(--orange)" onclick="app.delItem('s',${s.id})">×</button>
+                        </div>
+                    </div>`;
+                });
+
+                const iL = document.getElementById('inv-list');
+                iL.innerHTML = this.st.inv.length ? "" : '<small style="opacity:0.2">Empty</small>';
+                this.st.inv.forEach((item, idx) => {
+                    iL.innerHTML += `<div class="inv-item" onclick="app.openBox(${idx})">🎁<span class="item-qty">x${item.qty}</span></div>`;
+                });
+            },
+
+            openBox(idx) {
+                this.sysNotify("Open Mystery Box?", () => {
+                    const item = this.st.inv[idx];
+                    if(Math.random() < 0.1) {
+                        this.st.xp += 1000;
+                        this.st.shieldExpiry = Date.now() + (7*24*60*60*1000);
+                        this.sysNotify("JACKPOT! 🛡️ Shield + 1000 XP!", null, false);
+                    } else {
+                        const w = Math.floor(Math.random() * 1000) + 1;
+                        this.st.xp += w;
+                        this.sysNotify(`Found ${w} XP!`, null, false);
+                    }
+                    if(item.qty > 1) item.qty--;
+                    else this.st.inv.splice(idx, 1);
+                    this.save();
+                }, true);
+            },
+
+            buy(id) {
+                const s = this.st.ss.find(x => x.id === id);
+                if(this.st.xp < s.p) return this.sysNotify("Insufficient XP!", null, false);
+                this.sysNotify(`Buy ${s.t}?`, () => {
+                    this.st.xp -= s.p;
+                    if(s.type === 'item') {
+                        let ex = this.st.inv.find(i => i.name === s.t);
+                        if(ex) ex.qty++;
+                        else this.st.inv.push({name:s.t, qty:1});
+                    }
+                    this.play('snd-buy');
+                    this.save();
+                }, true);
+            },
+
+            fight(v) {
+                this.st.xp += v;
+                if(v > 0) {
+                    this.st.dDate = Date.now() + (7*24*60*60*1000);
+                    this.play('snd-level');
+                }
+                this.save();
+                this.sysNotify(v > 0 ? "VICTORY! (+400)" : "LOST! (-100)", () => this.show('screen-main'), false);
+            },
+
+            tick() {
+                const nowMs = Date.now();
+
+                if(!this.st.questResetAt) {
+                    this.st.questResetAt = nowMs + 86400000;
+                    this.save();
+                }
+
+                while(nowMs >= this.st.questResetAt) {
+                    this.st.questResetAt += 86400000;
+                }
+
+                const questLeft = this.st.questResetAt - nowMs;
+                const hh = String(Math.floor(questLeft / 3600000)).padStart(2, '0');
+                const mm = String(Math.floor((questLeft % 3600000) / 60000)).padStart(2, '0');
+                const ss = String(Math.floor((questLeft % 60000) / 1000)).padStart(2, '0');
+
+                document.getElementById('timer-day').innerText = `Reset in: ${hh}:${mm}:${ss}`;
+
+                if(this.st.fDate) document.getElementById('timer-boss').innerText = "ARRIVAL: " + this.fmt(this.st.fDate - nowMs);
+                if(this.st.dDate) document.getElementById('timer-dung').innerText = "Dungeon: " + this.fmt(this.st.dDate - nowMs);
+            },
+
+            fmt(ms) {
+                if(ms < 0) return "00:00:00";
+                const d = Math.floor(ms / 86400000);
+                const h = Math.floor((ms % 86400000) / 3600000);
+                const m = Math.floor((ms % 3600000) / 60000);
+                const s = Math.floor((ms % 60000) / 1000);
+                return `${d > 0 ? d + 'd ' : ''}${h}h ${m}m ${s}s`;
+            },
+
+            sysNotify(msg, cb, can) {
+                const b = document.getElementById('notify-bg');
+                document.getElementById('notify-msg').innerText = msg;
+                b.style.display = 'flex';
+                document.getElementById('notify-cancel').style.display = can ? 'block' : 'none';
+                document.getElementById('notify-confirm').onclick = () => {
+                    b.style.display = 'none';
+                    if(cb) cb();
+                };
+                document.getElementById('notify-cancel').onclick = () => {
+                    b.style.display = 'none';
+                };
+            },
+
+            show(id) {
+                this.play('snd-click');
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+            },
+
+            openM(t) {
+                this.mType = t;
+                document.getElementById('m-title').innerText = "ADD NEW";
+                document.getElementById('modal-bg').style.display = 'flex';
+            },
+
+            closeM() {
+                document.getElementById('modal-bg').style.display = 'none';
+                document.getElementById('m-name').value = "";
+                document.getElementById('m-xp').value = "";
+            },
+
+            addItem() {
+                const t = document.getElementById('m-name').value;
+                const x = parseInt(document.getElementById('m-xp').value);
+                if(!t || !x) return;
+                if(this.mType === 'q') this.st.qs.push({id:Date.now(), t, p:x, d:false});
+                else this.st.ss.push({id:Date.now(), t, p:x, type:x >= 500 ? 'item' : ''});
+                this.closeM();
+                this.save();
+            },
+
+            delItem(t, id) {
+                if(confirm("Delete?")) {
+                    if(t === 'q') this.st.qs = this.st.qs.filter(i => i.id !== id);
+                    else this.st.ss = this.st.ss.filter(i => i.id !== id);
+                    this.save();
+                }
+            },
+
+            checkResets() {
+                if(this.st.resetDate !== new Date().toDateString()) {
+                    if(Date.now() > this.st.shieldExpiry) {
+                        let m = this.st.qs.filter(q => !q.d).length;
+                        if(m > 0) {
+                            this.st.xp -= 200;
+                            this.sysNotify("Penalty: -200 XP", null, false);
+                        }
+                    }
+                    this.st.qs.forEach(q => q.d = false);
+                    this.st.resetDate = new Date().toDateString();
+                    this.ensureMonthStatus();
+                    this.save();
+                }
+            },
+
+            reset() {
+                if(confirm("RESET ALL?")) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            },
+
+            doQ(id) {
+                const q = this.st.qs.find(x => x.id === id);
+                q.d = true;
+                this.st.xp += q.p;
+                this.markTodayVisit();
+                this.play('snd-level');
+                this.save();
+            }
         };
+
+        app.init();
     </script>
 </body>
 </html>
